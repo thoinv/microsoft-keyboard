@@ -74,16 +74,11 @@ webpackJsonp([0], {
                         var e = this;
                         return l.createElement(s, null, l.createElement(s, {
                             style: h.container
-                        }, l.createElement("div", {
-                            id: "enter_problem_box"
-                        }), l.createElement(E, {
+                        }, l.createElement(E, {
                             value: this.state.value,
                             keypadElement: this.state.keypadElement,
                             onChange: function(t, n) {
-
-    //todo log click
-                                console.log(t);
-
+                                console.log("KEYBOARD_CLICK:" + t);
                                 return e.setState({
                                     value: t
                                 }, n)
@@ -116,6 +111,12 @@ webpackJsonp([0], {
                 selectContainer: {
                     marginTop: 16,
                     flexDirection: "row"
+                }
+            });
+
+            document.addEventListener('readystatechange', event => {
+                if (event.target.readyState === "complete") {
+//                    document.getElementsByClassName("mq-editable-field")[0].click();
                 }
             });
         e.exports = b

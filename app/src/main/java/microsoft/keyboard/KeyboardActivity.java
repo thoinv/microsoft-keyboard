@@ -17,6 +17,9 @@ public class KeyboardActivity extends BaseActivity {
     @BindView(R.id.wv)
     WebView wv;
 
+    @BindView(R.id.wv_input)
+    WebView wvInput;
+
     public static void open(Context context, String latex) {
         LogUtils.logD(latex);
         Intent intent = new Intent(context, KeyboardActivity.class);
@@ -24,26 +27,46 @@ public class KeyboardActivity extends BaseActivity {
         context.startActivity(intent);
     }
 
-    @SuppressLint("JavascriptInterface")
+    @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
     @Override
     protected void initViews(Bundle savedInstanceState) {
         wv.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                wv.loadUrl("javascript:set_latex('\\\\\\left. \\\\\\begin{cases} { 8x+2y =  46  } \\\\\\\\\\ { 7x+3y =  47  } \\\\\\end{cases} \\\\\\right.');");
             }
         });
         wv.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                LogUtils.logD(consoleMessage.message());
+                String message = consoleMessage.message();
+                LogUtils.logD(message);
+                if (message.startsWith("KEYBOARD_CLICK")) {
+                    String text = message.substring(message.indexOf(":") + 1);
+                    LogUtils.logD("click " + text);
+                    wvInput.loadUrl("javascript:set_latex(\'" + text + "\');");
+                } else {
+                    LogUtils.logD(message);
+                }
                 return super.onConsoleMessage(consoleMessage);
             }
         });
         wv.addJavascriptInterface(this, "AndroidInterface");
         wv.getSettings().setJavaScriptEnabled(true);
         wv.loadUrl("file:///android_asset/keyboard/index.html");
+
+        wvInput.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                String message = consoleMessage.message();
+                LogUtils.logD(message);
+                return super.onConsoleMessage(consoleMessage);
+            }
+        });
+        wvInput.addJavascriptInterface(this, "ReactNativeWebView");
+
+        wvInput.getSettings().setJavaScriptEnabled(true);
+        wvInput.loadUrl("file:///android_asset/ms/keyboard.html");
     }
 
     @Override

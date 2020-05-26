@@ -12,20 +12,6 @@ const myPostMessage = (event, data) => {
         window.ReactNativeWebView.postMessage(message);
     }
 };
-/** When the page loads, looks at a few signals to update the theme */
-const detectColorScheme = () => {
-    var theme = "light";
-    if (localStorage.getItem("theme") &&
-        localStorage.getItem("theme") === "dark") {
-        theme = "dark";
-    }
-    else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        theme = "dark";
-    }
-    if (theme == "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-    }
-};
 /** Updates the DOM to change the theme of the page. Called by native code */
 const applyTheme = (theme) => {
     if (theme === "light") {
@@ -236,7 +222,6 @@ const keyHandler = (e) => {
     }
 };
 window.onload = () => {
-    detectColorScheme();
     guppy = new Guppy(editorInstanceName);
     guppy.event("change", editorOnChange);
     guppy.event("done", sendSearchMessage);
@@ -266,4 +251,11 @@ window.onload = () => {
     }, 200);
 };
 
+function set_latex(message){
+console.log("js => " + message)
+   guppy.activate();
+   guppy.import_latex(message);
+   guppy.engine.end();
+   guppy.render(true);
+}
 //# sourceMappingURL=keyboard.js.map
